@@ -31,7 +31,7 @@ def load_csv(csvpath):
 	
   
   
-def write_csv(csvpath, data, header=None):
+def save_csv(csvpath, data, header=None):
     """Saves the CSV file from path provided.
 
     Args:

@@ -11,7 +11,7 @@ import fire
 import questionary
 from pathlib import Path
 
-from qualifier.utils.fileio import load_csv, write_csv
+from qualifier.utils.fileio import load_csv, save_csv
 
 from qualifier.utils.calculators import (
     calculate_monthly_debt_ratio,
@@ -107,14 +107,19 @@ def save_qualifying_loans(qualifying_loans):
     Args:
         qualifying_loans (list of lists): The qualifying bank loans.
     """
-    csvpath = questionary.text("Enter a file path to save qualifying_loans(.csv):").ask()
-    csvpath = Path(csvpath)
-    if not csvpath.exists():
-        sys.exit(f"Oops! Can't find this path: {csvpath}")
-    write_csv(csvpath, qualifying_loans)
-	
-
-
+    # Provide the user the choice to save to .csv file.
+    user_option = questionary.text("Want to save qualifying_loans(.csv): enter 'Yes' or 'No'").ask()
+    # Verifies if user chooses to save to a csv file. Yes continues. Else not the problem exits.
+    if user_option == 'Yes':
+        csvpath = questionary.text("Enter a file path to save qualifying_loans(.csv):").ask()
+        csvpath = Path(csvpath)
+        if not csvpath.exists():
+            sys.exit(f"Oops! Can't find this path: {csvpath}")
+        else:
+            save_csv(csvpath, qualifying_loans)
+    else:    
+        sys.exit(f"You have opt out of saving file.  Thank you for using this app.")
+       
 
 def run():
     """The main function for running the script."""
@@ -129,10 +134,13 @@ def run():
     qualifying_loans = find_qualifying_loans(
         bank_data, credit_score, debt, income, loan_amount, home_value
     )
-
-    # Save qualifying loans
-    save_qualifying_loans(qualifying_loans)
-
+   
+    if len(qualifying_loans) >= 1:
+        # Save qualifying loans
+        save_qualifying_loans(qualifying_loans)
+        #print(f"Thank you for your {qualifying_loans}.")
+    else:
+        input("No loans found under these criterias.  Press any key to exit this app.")    
 
 if __name__ == "__main__":
     fire.Fire(run)
