@@ -38,6 +38,8 @@ def load_bank_data():
     """
     # Questioning user and storing answer to a variable.
     csvpath = questionary.text("Enter a file path './data/daily_rate_sheet.csv':").ask()
+    # Removing space and normalizing data input to lower case.
+    csvpath = csvpath.replace(" ", "").lower()
     csvpath = Path(csvpath)
     # Validates input file daily_rate_sheet.csv location.
     if not csvpath.exists():
@@ -116,10 +118,14 @@ def save_qualifying_loans(qualifying_loans):
     """
     # Provide the user the choice to save to .csv file.
     user_option = questionary.text("Want to save qualifying_loans(.csv): enter 'Yes' or 'No'").ask()
+    # Removing space and normalizing data input to lower case.
+    user_option = " ".join(user_option.split()).lower()
     # Testing an if statment based on user input. 
-    if user_option == 'Yes':
+    if user_option == 'yes':
         # Questioning user and storing answer to a variable.
         csvpath = questionary.text("Enter a file path to save './data/output/qualifying_loans.csv':").ask()
+        # Removing space and normalizing data input to lower case.
+        csvpath = csvpath.replace(" ", "").lower()
         csvpath = Path(csvpath)
         # Validates input file qualifying_loans.csv location.
         if not csvpath.exists():
