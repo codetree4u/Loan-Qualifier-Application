@@ -15,7 +15,7 @@ import questionary
 # Import pathlib
 from pathlib import Path
 
-#Import fileio
+# Import fileio
 from qualifier.utils.fileio import load_csv, write_csv
 
 # Import Calculators
@@ -37,6 +37,7 @@ def test_save_csv(qualifying_loans):
     Args:
         qualifying_loans (list of lists): The qualifying bank loans.
     """
+    # Setting file path to a variable.
     csvpath = Path('./data/output/qualifying_loans.csv')
     write_csv(csvpath, qualifying_loans)	
 
@@ -46,7 +47,7 @@ def test_calculate_monthly_debt_ratio():
 
 def test_calculate_loan_to_value_ratio():
     assert calculators.calculate_loan_to_value_ratio(210000, 250000) == 0.84
-
+# Gathering bank data and applicant's information.
 def test_filters():
     bank_data = load_csv(Path('./data/daily_rate_sheet.csv'))
     credit_score = 750
@@ -67,7 +68,7 @@ def find_qualifying_loans(bank_data,credit_score, debt, income, loan, home_value
     bank_data_filtered = filter_credit_score(credit_score, bank_data_filtered)
     bank_data_filtered = filter_debt_to_income(monthly_debt_ratio, bank_data_filtered)
     bank_data_filtered = filter_loan_to_value(loan_to_value_ratio, bank_data_filtered)
-
+    # Printing the number of loans available.
     print(f"Found {len(bank_data_filtered)} qualifying loans")
 
     return bank_data_filtered	
@@ -86,6 +87,6 @@ def run():
 
     # Save qualifying loans
     test_save_csv(qualifying_loans)
-
+# Running main function as main for this app.
 if __name__ == "__main__":
     fire.Fire(run)

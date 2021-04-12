@@ -6,18 +6,24 @@ This is a command line application to match applicants with qualifying loans.
 Example:
     $ python app.py
 """
+# Import sys module
 import sys
-import fire
+# Import Python Fire 
+import fire 
+# Import Questionary
 import questionary
+# Import pathlib
 from pathlib import Path
 
+# Import fileio
 from qualifier.utils.fileio import load_csv, save_csv
 
+# Import Calculators
 from qualifier.utils.calculators import (
     calculate_monthly_debt_ratio,
     calculate_loan_to_value_ratio,
 )
-
+# Import Filters
 from qualifier.filters.max_loan_size import filter_max_loan_size
 from qualifier.filters.credit_score import filter_credit_score
 from qualifier.filters.debt_to_income import filter_debt_to_income
@@ -30,9 +36,10 @@ def load_bank_data():
     Returns:
         The bank data from the data rate sheet CSV file.
     """
-
-    csvpath = questionary.text("Enter a file path to a daily_rate_sheet (.csv):").ask()
+    # Questioning user and storing answer to a variable.
+    csvpath = questionary.text("Enter a file path './data/daily_rate_sheet.csv':").ask()
     csvpath = Path(csvpath)
+    # Validates input file daily_rate_sheet.csv location.
     if not csvpath.exists():
         sys.exit(f"Oops! Can't find this path: {csvpath}")
 
@@ -45,13 +52,13 @@ def get_applicant_info():
     Returns:
         Returns the applicant's financial information.
     """
-
+    # Questioning user and storing answer to a variable.
     credit_score = questionary.text("What's your credit score?").ask()
     debt = questionary.text("What's your current amount of monthly debt?").ask()
     income = questionary.text("What's your total monthly income?").ask()
     loan_amount = questionary.text("What's your desired loan amount?").ask()
     home_value = questionary.text("What's your home value?").ask()
-
+    # Coverting variable values to specif data type.
     credit_score = int(credit_score)
     debt = float(debt)
     income = float(income)
@@ -96,7 +103,7 @@ def find_qualifying_loans(bank_data, credit_score, debt, income, loan, home_valu
     bank_data_filtered = filter_credit_score(credit_score, bank_data_filtered)
     bank_data_filtered = filter_debt_to_income(monthly_debt_ratio, bank_data_filtered)
     bank_data_filtered = filter_loan_to_value(loan_to_value_ratio, bank_data_filtered)
-
+    # Printing the number of loans available.
     print(f"Found {len(bank_data_filtered)} qualifying loans")
 
     return bank_data_filtered
@@ -109,15 +116,18 @@ def save_qualifying_loans(qualifying_loans):
     """
     # Provide the user the choice to save to .csv file.
     user_option = questionary.text("Want to save qualifying_loans(.csv): enter 'Yes' or 'No'").ask()
-    # Verifies if user chooses to save to a csv file. Yes continues. Else not the problem exits.
+    # Testing an if statment based on user input. 
     if user_option == 'Yes':
-        csvpath = questionary.text("Enter a file path to save qualifying_loans(.csv):").ask()
+        # Questioning user and storing answer to a variable.
+        csvpath = questionary.text("Enter a file path to save './data/output/qualifying_loans.csv':").ask()
         csvpath = Path(csvpath)
+        # Validates input file qualifying_loans.csv location.
         if not csvpath.exists():
             sys.exit(f"Oops! Can't find this path: {csvpath}")
         else:
             save_csv(csvpath, qualifying_loans)
-    else:    
+    else:
+        # User doesn't enter Yes, so the app exists.    
         sys.exit(f"You have opt out of saving file.  Thank you for using this app.")
        
 
@@ -134,13 +144,13 @@ def run():
     qualifying_loans = find_qualifying_loans(
         bank_data, credit_score, debt, income, loan_amount, home_value
     )
-   
+    # Checking if qualifying list is empty.
     if len(qualifying_loans) >= 1:
         # Save qualifying loans
         save_qualifying_loans(qualifying_loans)
-        #print(f"Thank you for your {qualifying_loans}.")
     else:
+        # Questioning user and expecting any key stroke to completly exit the app.
         input("No loans found under these criterias.  Press any key to exit this app.")    
-
+# Running main function as main for this app.
 if __name__ == "__main__":
     fire.Fire(run)
